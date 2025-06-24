@@ -227,11 +227,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## 📞 Support
 
 For support, please reach out to:
-- **Email**: support@docmanager.com
-- **Issues**: [GitHub Issues](https://github.com/Prathmesh-S27/Next-Gen-Document-Management-System/issues)
+- **Email**: Prathmesh.2730@gmail.com
 
 ---
 
 <p align="center">
   Made with ❤️ by the DocManager Team
-</p>
+</p>#   P r a t h m e s h - S 2 7 - N e x t - G e n - D o c u m e n t - M a n a g e m e n t - S y s t e m  
+ 
