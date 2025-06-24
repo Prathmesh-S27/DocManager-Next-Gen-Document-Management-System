@@ -233,5 +233,4 @@ For support, please reach out to:
 
 <p align="center">
   Made with ❤️ by the DocManager Team
-</p>#   P r a t h m e s h - S 2 7 - N e x t - G e n - D o c u m e n t - M a n a g e m e n t - S y s t e m  
- 
+</p>
