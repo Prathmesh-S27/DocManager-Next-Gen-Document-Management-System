@@ -94,7 +94,7 @@ graph LR
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/Prathmesh-S27/Next-Gen-Document-Management-System.git
+   git clone https://github.com/Prathmesh-S27/DocManager-Next-Gen-Document-Management-System.git
    cd Next-Gen-Document-Management-System
    ```
 
