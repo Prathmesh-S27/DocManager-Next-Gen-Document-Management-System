@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Document Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --success-color: #16a34a;
+            --warning-color: #ca8a04;
+            --danger-color: #dc2626;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --light-bg: #f1f5f9;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a.active {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a.active::after {
+            width: 100%;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        main {
+            padding: 2rem 0;
+        }
+        
+        .dashboard h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 2rem 0 1.5rem;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 80, 179, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.25rem;
+            color: var(--primary-color);
+            font-size: 1.75rem;
+        }
+        
+        .stat-content h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--light-text);
+            font-weight: 500;
+        }
+        
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.25rem 0 0;
+            line-height: 1;
+        }
+        
+        .dashboard-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .dashboard-action-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.75rem;
+            display: flex;
+            align-items: flex-start;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .dashboard-action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 80, 179, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            position: relative;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-size: 0.75rem;
+            font-weight: 600;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-content {
+            flex: 1;
+        }
+        
+        .card-content h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.35rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        .card-content p {
+            margin: 0 0 1.5rem;
+            color: var(--light-text);
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transform: translateY(-2px);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .document-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .document-type-icon {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        
+        .document-type-icon.pdf {
+            background-color: #dc2626;
+        }
+        
+        .document-type-icon.docx, .document-type-icon.doc {
+            background-color: #2563eb;
+        }
+        
+        .document-type-icon.jpg, .document-type-icon.jpeg, .document-type-icon.png {
+            background-color: #16a34a;
+        }
+        
+        .document-type-icon.txt {
+            background-color: #6b7280;
+        }
+        
+        .document-info {
+            padding: 1.25rem;
+            flex: 1;
+        }
+        
+        .document-info h3 {
+            margin: 0 0 0.75rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            line-height: 1.4;
+        }
+        
+        .doc-description {
+            color: var(--light-text);
+            margin: 0 0 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .doc-date {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-actions {
+            padding: 1.25rem;
+            display: flex;
+            gap: 0.75rem;
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+        
+        .card-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .view-all-link {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .view-all-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .view-all-link a:hover {
+            background-color: rgba(0, 80, 179, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state h3 {
+            margin: 0 0 1rem;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .empty-state p {
+            margin: 0 0 2rem;
+            color: var(--light-text);
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(202, 138, 4, 0.1);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-stats, 
+            .dashboard-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('user.dashboard') }}" class="active">Dashboard</a></li>
+                    <li><a href="{{ url_for('view.all_documents') }}" style="color: #003a8c;">All Documents</a></li>
+                    <li><a href="{{ url_for('security.verification_page') }}" style="color: #003a8c;">Verify Documents</a></li>
+                    <li><a href="{{ url_for('user.profile') }}" style="color: #003a8c;">Profile</a></li>
+                    <li><a href="{{ url_for('user.upload_document') }}" style="color: #003a8c;">Upload</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: #003a8c;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <section class="dashboard">
+                <h2>Dashboard</h2>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Documents</h3>
+                            <p class="stat-number">{{ document_count|default(0) }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Recent Uploads</h3>
+                            <p class="stat-number">{{ recent_uploads|default(0) }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-actions">
+                    <div class="dashboard-action-card">
+                        <div class="card-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Upload Document</h3>
+                            <p>Add new documents to your collection</p>
+                            <a href="{{ url_for('user.upload_document') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Upload New
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-action-card">
+                        <div class="card-icon">
+                            <i class="fas fa-folder-open"></i>
+                            {% if document_count %}
+                            <span class="badge">{{ document_count }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-content">
+                            <h3>View All Documents</h3>
+                            <p>Browse, search, and manage your documents</p>
+                            <a href="{{ url_for('view.all_documents') }}" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Browse Documents
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-action-card">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Verify Documents</h3>
+                            <p>Check document integrity and authenticity</p>
+                            <a href="{{ url_for('security.verification_page') }}" class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Verify Documents
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2>Recent Documents</h2>
+                <div class="actions">
+                    <a href="{{ url_for('user.upload_document') }}" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload New Document
+                    </a>
+                    <a href="{{ url_for('view.all_documents') }}" class="btn btn-secondary">
+                        <i class="fas fa-folder-open"></i> View All Documents
+                    </a>
+                </div>
+                
+                {% if documents %}
+                    <div class="documents-grid">
+                        {% for doc in documents %}
+                            <div class="document-card">
+                                <div class="document-type-icon {{ doc.document_type }}">
+                                    {{ doc.document_type|upper }}
+                                </div>
+                                <div class="document-info">
+                                    <h3>{{ doc.document_name }}</h3>
+                                    <p class="doc-description">{{ doc.document_description|truncate(80) or "No description provided." }}</p>
+                                    <p class="doc-date">
+                                        <i class="fas fa-calendar-alt"></i> Uploaded: 
+                                        {% if doc.upload_date and 'T' in doc.upload_date %}
+                                            {{ doc.upload_date.split('T')[0] }}
+                                        {% elif doc.formatted_date %}
+                                            {{ doc.formatted_date }}
+                                        {% else %}
+                                            Unknown date
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="card-actions">
+                                    <a href="{{ url_for('view.view_document', document_id=doc.document_id) }}" class="btn btn-secondary">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                    <a href="{{ doc.document_url }}" target="_blank" class="btn btn-primary">
+                                        <i class="fas fa-external-link-alt"></i> Open
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if document_count > documents|length %}
+                        <div class="view-all-link">
+                            <a href="{{ url_for('view.all_documents') }}">
+                                View all {{ document_count }} documents <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>No documents found</h3>
+                        <p>Upload your first document to get started!</p>
+                        <a href="{{ url_for('user.upload_document') }}" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload Your First Document
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+</body>
+</html>

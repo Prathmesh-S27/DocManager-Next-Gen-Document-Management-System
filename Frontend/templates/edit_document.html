@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit {{ document.document_name }} | Document Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --light-bg: #f1f5f9;
+            --disabled-bg: #f4f4f5;
+            --disabled-text: #a1a1aa;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        main {
+            padding: 2rem 0;
+        }
+        
+        .breadcrumbs {
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            color: var(--light-text);
+        }
+        
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 1.5rem 0;
+        }
+        
+        .document-form {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-group input[disabled] {
+            background-color: var(--disabled-bg);
+            color: var(--disabled-text);
+            cursor: not-allowed;
+            border: 1px solid var(--disabled-bg);
+        }
+        
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 80, 179, 0.15);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            margin-top: 0.4rem;
+            margin-bottom: 0;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: #b91c1c;
+            border-left: 4px solid #b91c1c;
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('user.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('view.all_documents') }}">All Documents</a></li>
+                    <li><a href="{{ url_for('user.profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('user.upload_document') }}">Upload</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="breadcrumbs">
+                <a href="{{ url_for('user.dashboard') }}">Dashboard</a> &raquo;
+                <a href="{{ url_for('view.all_documents') }}">Documents</a> &raquo;
+                <a href="{{ url_for('view.view_document', document_id=document.document_id) }}">{{ document.document_name }}</a> &raquo;
+                Edit
+            </div>
+            
+            <h1>Edit Document</h1>
+            
+            <form action="{{ url_for('view.edit_document', document_id=document.document_id) }}" method="POST" class="document-form">
+                <div class="form-group">
+                    <label for="document_name">Document Name</label>
+                    <input type="text" id="document_name" name="document_name" value="{{ document.document_name }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="document_description">Description</label>
+                    <textarea id="document_description" name="document_description" rows="4">{{ document.document_description }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" value="{{ document.category }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tags">Tags (comma separated)</label>
+                    <input type="text" id="tags" name="tags" value="{{ document.tags }}" placeholder="invoice, receipt, contract, etc.">
+                </div>
+                
+                <div class="form-group">
+                    <label>Document Type</label>
+                    <input type="text" value="{{ document.document_type|upper }}" disabled>
+                    <p class="form-help">Document type cannot be changed</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload Date</label>
+                    <input type="text" value="{{ document.formatted_date }}" disabled>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{{ url_for('view.view_document', document_id=document.document_id) }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Document Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --light-bg: #f1f5f9;
+            --form-bg: #f9fafb;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a.active {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a.active::after {
+            width: 100%;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        main {
+            padding: 2rem 0;
+        }
+        
+        .profile {
+            margin-bottom: 3rem;
+        }
+        
+        .profile h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .profile h2::after {
+            content: '';
+            position: absolute;
+            bottom: -0.75rem;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .profile-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            padding: 1.75rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .profile-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .profile-section h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: var(--text-color);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .label {
+            font-weight: 500;
+            color: var(--secondary-color);
+            width: 140px;
+            flex-shrink: 0;
+        }
+        
+        .value {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .profile-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .edit-profile,
+        .change-password {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            padding: 1.75rem;
+        }
+        
+        .edit-profile h3,
+        .change-password h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: var(--text-color);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="tel"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            background-color: var(--form-bg);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-group input[type="text"]:focus,
+        .form-group input[type="tel"]:focus,
+        .form-group input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 80, 179, 0.15);
+        }
+        
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            margin-top: 0.4rem;
+            margin-bottom: 0;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #44444e;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: #b91c1c;
+            border-left: 4px solid #b91c1c;
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-info, 
+            .profile-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('user.dashboard') }}" style="color: #003a8c;">Dashboard</a></li>
+                    <li><a href="{{ url_for('view.all_documents') }}" style="color: #003a8c;">All Documents</a></li>
+                    <li><a href="{{ url_for('user.profile') }}" class="active">Profile</a></li>
+                    <li><a href="{{ url_for('user.upload_document') }}" style="color: #003a8c;">Upload</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: #003a8c;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <section class="profile">
+                <h2>My Profile</h2>
+                
+                <div class="profile-info">
+                    <div class="profile-section">
+                        <h3>Personal Information</h3>
+                        <div class="info-row">
+                            <span class="label">Email:</span>
+                            <span class="value">{{ user.email|default('Not available') }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Name:</span>
+                            <span class="value">{{ user.name|default('Not set') }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Phone:</span>
+                            <span class="value">{{ user.phone|default('Not provided') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>Account Information</h3>
+                        <div class="info-row">
+                            <span class="label">Account Created:</span>
+                            <span class="value">{{ user.created_at.split('T')[0] if user.created_at else 'Unknown' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Last Login:</span>
+                            <span class="value">{{ user.last_login.split('T')[0] if user.last_login else 'Unknown' }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <div class="edit-profile">
+                        <h3>Update Profile</h3>
+                        <form action="{{ url_for('user.update_profile') }}" method="post">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" value="{{ user.name|default('') }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" name="phone" value="{{ user.phone|default('') }}" placeholder="Enter your phone number">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="change-password">
+                        <h3>Change Password</h3>
+                        <form action="{{ url_for('user.profile') }}/change-password" method="post">
+                            <div class="form-group">
+                                <label for="current_password">Current Password</label>
+                                <input type="password" id="current_password" name="current_password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new_password">New Password</label>
+                                <input type="password" id="new_password" name="new_password" required minlength="8">
+                                <p class="form-help">Password must be at least 8 characters long</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm_password">Confirm New Password</label>
+                                <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-secondary">
+                                    <i class="fas fa-lock"></i> Change Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password validation
+            const newPassword = document.getElementById('new_password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const form = document.querySelector('.change-password form');
+            
+            form.addEventListener('submit', function(event) {
+                if (newPassword.value !== confirmPassword.value) {
+                    event.preventDefault();
+                    alert('New passwords do not match');
+                }
+            });
+            
+            // Add subtle animations
+            const profileSections = document.querySelectorAll('.profile-section, .edit-profile, .change-password');
+            profileSections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                
+                setTimeout(() => {
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, 100 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

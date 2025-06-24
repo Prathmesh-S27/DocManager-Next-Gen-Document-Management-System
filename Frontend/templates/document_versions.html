@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.document_name }} - Version History | Document Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --success-color: #16a34a;
+            --warning-color: #ca8a04;
+            --danger-color: #dc2626;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --light-bg: #f1f5f9;
+            --current-version-bg: #dcfce7;
+            --current-version-color: #166534;
+            --old-version-bg: #e2e8f0;
+            --old-version-color: #475569;
+            --diff-added-bg: #dcfce7;
+            --diff-added-color: #166534;
+            --diff-removed-bg: #fee2e2;
+            --diff-removed-color: #b91c1c;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        main {
+            padding: 2rem 0;
+        }
+        
+        .breadcrumbs {
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            color: var(--light-text);
+        }
+        
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .document-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .primary-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .version-list {
+            margin-top: 2rem;
+        }
+        
+        .version-item {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .version-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .version-info {
+            flex: 1;
+        }
+        
+        .version-info h3 {
+            margin: 0 0 0.75rem;
+            font-size: 1.2rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        .version-label {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .current-version {
+            background-color: var(--current-version-bg);
+            color: var(--current-version-color);
+        }
+        
+        .old-version {
+            background-color: var(--old-version-bg);
+            color: var(--old-version-color);
+        }
+        
+        .version-date {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .version-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .version-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        
+        .version-detail {
+            display: flex;
+            align-items: center;
+        }
+        
+        .version-detail i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .diff-view {
+            margin-top: 2.5rem;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .diff-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+        
+        .diff-selector {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .diff-content {
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 6px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            background-color: var(--light-bg);
+        }
+        
+        .diff-added {
+            background-color: var(--diff-added-bg);
+            color: var(--diff-added-color);
+            padding: 0.15rem 0;
+        }
+        
+        .diff-removed {
+            background-color: var(--diff-removed-bg);
+            color: var(--diff-removed-color);
+            padding: 0.15rem 0;
+            text-decoration: line-through;
+        }
+        
+        .empty-state {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            margin: 2.5rem 0;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .empty-state-icon {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--text-color);
+            margin: 1rem 0;
+        }
+        
+        .empty-state p {
+            color: var(--light-text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .modal:target,
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal:target .modal-content,
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.75rem;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .close:hover {
+            color: var(--danger-color);
+        }
+        
+        .modal-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--text-color);
+            margin: 0 0 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--light-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .form-group input[type="file"]:hover {
+            background-color: rgba(0, 80, 179, 0.05);
+            border-color: var(--primary-color);
+        }
+        
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            margin-top: 0.5rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .document-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .primary-actions {
+                width: 100%;
+            }
+            
+            .primary-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .version-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .version-actions {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('user.dashboard') }}" style="color: #003a8c;">Dashboard</a></li>
+                    <li><a href="{{ url_for('view.all_documents') }}" style="color: #003a8c;">All Documents</a></li>
+                    <li><a href="{{ url_for('user.profile') }}" style="color: #003a8c;">Profile</a></li>
+                    <li><a href="{{ url_for('user.upload_document') }}" style="color: #003a8c;">Upload</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: #003a8c;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="breadcrumbs">
+                <a href="{{ url_for('user.dashboard') }}">Dashboard</a> &raquo;
+                <a href="{{ url_for('view.all_documents') }}">Documents</a> &raquo;
+                <a href="{{ url_for('view.view_document', document_id=document.document_id) }}">{{ document.document_name }}</a> &raquo;
+                Version History
+            </div>
+            
+            <div class="document-header">
+                <h1>Version History: {{ document.document_name }}</h1>
+                <div class="primary-actions">
+                    <a href="{{ url_for('view.view_document', document_id=document.document_id) }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Document
+                    </a>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#uploadVersionModal">
+                        <i class="fas fa-upload"></i> Upload New Version
+                    </button>
+                </div>
+            </div>
+            
+            <div class="version-list">
+                {% if versions %}
+                    {% for version in versions %}
+                        <div class="version-item">
+                            <div class="version-info">
+                                <h3>
+                                    {{ version.filename }}
+                                    {% if version.get('is_current') %}
+                                        <span class="version-label current-version">Current Version</span>
+                                    {% else %}
+                                        <span class="version-label old-version">Version {{ loop.index }}</span>
+                                    {% endif %}
+                                </h3>
+                                <div class="version-date">
+                                    {% if version.get('formatted_date') %}
+                                        Uploaded on {{ version.formatted_date }}
+                                        {% if version.get('formatted_time') %}
+                                            at {{ version.formatted_time }}
+                                        {% endif %}
+                                    {% elif version.get('upload_date') %}
+                                        Uploaded on {{ version.upload_date }}
+                                    {% else %}
+                                        Upload date unknown
+                                    {% endif %}
+                                </div>
+                                <div class="version-details">
+                                    <div class="version-detail">
+                                        <i class="fas fa-file"></i>
+                                        {% if version.get('formatted_size') %}
+                                            {{ version.formatted_size }}
+                                        {% elif version.get('file_size') %}
+                                            {{ version.file_size }} bytes
+                                        {% else %}
+                                            Size unknown
+                                        {% endif %}
+                                    </div>
+                                    {% if version.get('version_id') %}
+                                        <div class="version-detail">
+                                            <i class="fas fa-code-branch"></i>
+                                            Version ID: {{ version.version_id }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="version-actions">
+                                <a href="{{ version.document_url }}" target="_blank" class="btn btn-secondary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{{ version.document_url }}" download class="btn btn-secondary">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                {% if not version.get('is_current') %}
+                                    <button class="btn btn-primary restore-version" data-version-id="{{ version.version_id }}" data-version-url="{{ version.document_url }}">
+                                        <i class="fas fa-history"></i> Restore
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h2>No Version History</h2>
+                        <p>This document hasn't been updated yet. When you upload new versions, they'll appear here.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload New Version Modal -->
+    <div class="modal" id="uploadVersionModal">
+        <div class="modal-content">
+            <span class="close" id="closeUploadModal">&times;</span>
+            <h2>Upload New Version</h2>
+            <form action="{{ url_for('upload.upload_new_version', document_id=document.document_id) }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file">Select File</label>
+                    <input type="file" id="file" name="file" required>
+                    <div class="form-help">Allowed file types: PDF, DOC, DOCX, TXT, JPG, JPEG, PNG, CSV, XLS, XLSX</div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancelUpload" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload New Version</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Restore Version Confirmation Modal -->
+    <div class="modal" id="restoreModal">
+        <div class="modal-content">
+            <span class="close" id="closeRestoreModal">&times;</span>
+            <h2>Restore Previous Version</h2>
+            <p>Are you sure you want to restore this version as the current version? This will not delete any versions, but will make this version the active one.</p>
+            <form id="restoreForm" action="{{ url_for('upload.restore_version', document_id=document.document_id) }}" method="POST">
+                <input type="hidden" id="versionId" name="version_id">
+                <input type="hidden" id="versionUrl" name="version_url">
+                
+                <div class="form-actions">
+                    <button type="button" id="cancelRestore" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Restore Version</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Modal handling
+        const uploadModal = document.getElementById('uploadVersionModal');
+        const restoreModal = document.getElementById('restoreModal');
+        const closeUploadModalBtn = document.getElementById('closeUploadModal');
+        const closeRestoreModalBtn = document.getElementById('closeRestoreModal');
+        const cancelUploadBtn = document.getElementById('cancelUpload');
+        const cancelRestoreBtn = document.getElementById('cancelRestore');
+        
+        // Open upload modal with animation
+        document.querySelector('[data-target="#uploadVersionModal"]').addEventListener('click', function() {
+            uploadModal.style.display = 'flex';
+            setTimeout(() => {
+                uploadModal.style.opacity = '1';
+                uploadModal.querySelector('.modal-content').style.transform = 'translateY(0)';
+            }, 10);
+        });
+        
+        // Close modals with animation
+        function closeModal(modal) {
+            modal.style.opacity = '0';
+            modal.querySelector('.modal-content').style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        
+        closeUploadModalBtn.addEventListener('click', function() {
+            closeModal(uploadModal);
+        });
+        
+        closeRestoreModalBtn.addEventListener('click', function() {
+            closeModal(restoreModal);
+        });
+        
+        cancelUploadBtn.addEventListener('click', function() {
+            closeModal(uploadModal);
+        });
+        
+        cancelRestoreBtn.addEventListener('click', function() {
+            closeModal(restoreModal);
+        });
+        
+        // Handle restore version buttons
+        const restoreButtons = document.querySelectorAll('.restore-version');
+        restoreButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const versionId = this.getAttribute('data-version-id');
+                const versionUrl = this.getAttribute('data-version-url');
+                
+                document.getElementById('versionId').value = versionId;
+                document.getElementById('versionUrl').value = versionUrl;
+                
+                restoreModal.style.display = 'flex';
+                setTimeout(() => {
+                    restoreModal.style.opacity = '1';
+                    restoreModal.querySelector('.modal-content').style.transform = 'translateY(0)';
+                }, 10);
+            });
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === uploadModal) {
+                closeModal(uploadModal);
+            }
+            if (event.target === restoreModal) {
+                closeModal(restoreModal);
+            }
+        });
+    </script>
+</body>
+</html>

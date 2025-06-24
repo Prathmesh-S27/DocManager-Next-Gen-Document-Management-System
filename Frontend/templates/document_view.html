@@ -1,0 +1,123 @@
+<!-- Add this section where appropriate in your template -->
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5><i class="fas fa-shield-alt"></i> Document Integrity Verification</h5>
+    </div>
+    <div class="card-body">
+        <p>Verify that this document has not been tampered with since upload.</p>
+        
+        <div class="d-flex justify-content-between mb-3">
+            <button id="verify-standard" class="btn btn-outline-primary">
+                <i class="fas fa-check-circle"></i> Standard Verification
+            </button>
+            <button id="verify-blockchain" class="btn btn-outline-info">
+                <i class="fas fa-link"></i> Blockchain Verification
+            </button>
+        </div>
+        
+        <div id="verification-results" class="d-none alert">
+            <h6 class="result-title"></h6>
+            <p class="result-message"></p>
+            <div class="technical-details small text-muted mt-2">
+                <p class="mb-1"><strong>Document ID:</strong> <span class="doc-id"></span></p>
+                <p class="mb-1 root-info"><strong>Merkle Root:</strong> <span class="merkle-root"></span></p>
+                <div class="blockchain-details d-none">
+                    <p class="mb-1"><strong>Original Root (R₁):</strong> <span class="original-root"></span></p>
+                    <p class="mb-1"><strong>Current Root (R₂):</strong> <span class="current-root"></span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="verification-method-info d-none mt-3 p-3" style="background-color: rgba(22, 163, 74, 0.1); border-radius: 6px; border: 1px solid #16a34a;">
+            <h6 class="mb-2"><i class="fas fa-info-circle"></i> Verification Method: <span class="verification-method-text">N/A</span></h6>
+            <p class="verification-method-details mb-0 small"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Standard verification
+    $('#verify-standard').click(function() {
+        const docId = '{{ document.document_id }}';
+        $('#verification-results').removeClass('d-none alert-success alert-danger').addClass('alert-info');
+        $('.result-title').text('Verifying document...');
+        $('.result-message').text('Please wait while we verify the document integrity...');
+        $('.blockchain-details').addClass('d-none');
+        $('.root-info').removeClass('d-none');
+        
+        $.ajax({
+            url: `/security/verify-document/${docId}`,
+            type: 'GET',
+            success: function(data) {
+                $('#verification-results').removeClass('alert-info').addClass(data.verified ? 'alert-success' : 'alert-danger');
+                $('.result-title').text(data.verified ? '✅ Document Verified' : '❌ Verification Failed');
+                $('.result-message').text(data.verified ? 
+                    'The document matches the records in our secure Merkle tree.' : 
+                    'The document does not match our secure records. It may have been modified.');
+                $('.doc-id').text(docId);
+                $('.merkle-root').text(data.root_hash);
+            },
+            error: function(xhr) {
+                $('#verification-results').removeClass('alert-info').addClass('alert-danger');
+                $('.result-title').text('Verification Error');
+                $('.result-message').text('Could not verify document: ' + (xhr.responseJSON?.error || 'Unknown error'));
+            }
+        });
+    });
+    
+    // Blockchain verification
+    $('#verify-blockchain').click(function() {
+        const docId = '{{ document.document_id }}';
+        $('#verification-results').removeClass('d-none alert-success alert-danger').addClass('alert-info');
+        $('.result-title').text('Performing Blockchain Verification...');
+        $('.result-message').text('Please wait while we verify against the blockchain record...');
+        $('.root-info').addClass('d-none');
+        $('.verification-method-info').addClass('d-none');
+        
+        $.ajax({
+            url: `/security/verify-document-blockchain/${docId}`,
+            type: 'GET',
+            success: function(data) {
+                $('#verification-results').removeClass('alert-info').addClass(data.verified ? 'alert-success' : 'alert-danger');
+                $('.result-title').text(data.verified ? '✅ Blockchain Verification Successful' : '❌ Blockchain Verification Failed');
+                $('.result-message').text(data.message || (data.verified ? 
+                    'The document\'s integrity is verified against the immutable blockchain record.' : 
+                    'The document does not match the original blockchain record. It may have been tampered with.'));
+                $('.doc-id').text(docId);
+                $('.blockchain-details').removeClass('d-none');
+                $('.original-root').text(data.original_root);
+                $('.current-root').text(data.current_root);
+                
+                // Display verification method details if available
+                if (data.verified && data.verification_method) {
+                    $('.verification-method-info').removeClass('d-none');
+                    
+                    if (data.verification_method === "content_timestamp") {
+                        $('.verification-method-text').text('Content & Timestamp Match');
+                        $('.verification-method-details').html(
+                            'This document has been verified based on its content and timestamp matching the original. ' +
+                            'The Merkle tree structure may have changed due to other documents being added or removed, ' +
+                            'but the document itself has not been modified.'
+                        );
+                    } else if (data.verification_method === "exact_match") {
+                        $('.verification-method-text').text('Exact Merkle Root Match');
+                        $('.verification-method-details').html(
+                            'This document was verified with an exact match of its Merkle root hash in the blockchain record.'
+                        );
+                    } else {
+                        $('.verification-method-text').text(data.verification_method);
+                        $('.verification-method-details').text('Document verified successfully.');
+                    }
+                }
+            },
+            error: function(xhr) {
+                $('#verification-results').removeClass('alert-info').addClass('alert-danger');
+                $('.result-title').text('Blockchain Verification Error');
+                $('.result-message').text('Could not verify against blockchain: ' + (xhr.responseJSON?.error || 'Unknown error'));
+            }
+        });
+    });
+});
+</script>

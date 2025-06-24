@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.document_name }} | Document Viewer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --warning-color: #d97706;
+            --success-color: #16a34a;
+            --info-color: #0369a1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --muted-bg: #f4f4f5;
+            --ai-bg: #f0f7ff;
+            --ai-accent: #0050b3;
+            --tag-bg: #e5e7eb;
+            --tag-color: #4b5563;
+            --keyword-bg: #dbeafe;
+            --keyword-color: #1d4ed8;
+            --topic-bg: #f1f5f9;
+            --topic-color: #475569;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .breadcrumbs {
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            color: var(--light-text);
+        }
+        
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .document-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .primary-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--muted-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: var(--white);
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .document-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        @media (max-width: 992px) {
+            .document-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .document-details {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+        }
+        
+        .document-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .meta-item {
+            margin-bottom: 0.75rem;
+        }
+        
+        .meta-label {
+            display: block;
+            font-weight: 500;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .meta-value {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .document-description h3, 
+        .document-tags h3, 
+        .document-ai h3,
+        .document-actions-secondary h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 1.5rem 0 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            background-color: var(--tag-bg);
+            color: var(--tag-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* AI insights styling */
+        .document-ai {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background-color: var(--ai-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--ai-accent);
+        }
+        
+        .ai-summary {
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .keyword-tag {
+            background-color: var(--keyword-bg);
+            color: var(--keyword-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .keyword-tag:hover {
+            background-color: var(--keyword-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .topic-tag {
+            background-color: var(--topic-bg);
+            color: var(--topic-color);
+        }
+        
+        .document-preview {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+        
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-height: 70vh;
+            overflow: auto;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .pdf-container {
+            width: 100%;
+            height: 70vh;
+        }
+        
+        .pdf-container iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .generic-preview {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            text-align: center;
+            color: var(--light-text);
+        }
+        
+        .file-icon {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .file-icon span {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            background-color: var(--muted-bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        /* Modal styling improvements */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-content h2 {
+            margin-top: 0;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .warning {
+            color: var(--danger-color);
+            font-weight: 500;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: rgba(220, 38, 38, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            gap: 0.75rem;
+        }
+        
+        /* Filter and search improvements */
+        .search-bar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            padding: 1rem;
+        }
+        
+        .search-bar input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .search-bar input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 80, 179, 0.15);
+        }
+        
+        .search-bar select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        
+        .search-bar button {
+            padding: 0.75rem 1.25rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .search-bar button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-tag {
+            background-color: var(--keyword-bg);
+            color: var(--keyword-color);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .filter-tag .remove {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .filter-tag .remove:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .related-documents {
+            margin-top: 3rem;
+        }
+        
+        .related-documents h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .documents-grid-small {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .document-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .document-type-icon {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .document-info {
+            padding: 1.25rem;
+        }
+        
+        .document-info h3 {
+            margin: 0 0 0.75rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .document-meta {
+            font-size: 0.9rem;
+            color: var(--light-text);
+        }
+        
+        .document-actions {
+            margin-top: auto;
+            padding: 1.25rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .document-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('user.dashboard') }}" style="color: #003a8c;">Dashboard</a></li>
+                    <li><a href="{{ url_for('view.all_documents') }}" style="color: #003a8c;">All Documents</a></li>
+                    <li><a href="{{ url_for('user.profile') }}" style="color: #003a8c;">Profile</a></li>
+                    <li><a href="{{ url_for('user.upload_document') }}" style="color: #003a8c;">Upload</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: #003a8c;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="breadcrumbs">
+                <a href="{{ url_for('user.dashboard') }}">Dashboard</a> &raquo;
+                <a href="{{ url_for('view.all_documents') }}">Documents</a> &raquo;
+                {{ document.document_name }}
+            </div>
+            
+            <div class="document-header">
+                <h1>{{ document.document_name }}</h1>
+                <div class="primary-actions">
+                    <a href="{{ document.content_url }}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Open in New Tab
+                    </a>
+                    <a href="{{ document.content_url }}?download=true" class="btn btn-secondary" download>
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Document ID display - always visible -->
+            <div class="filter-tag" style="background-color: #e0f2fe; color: #0284c7; border: 1px solid #0ea5e9; margin-bottom: 20px; display: inline-block;">
+                <i class="fas fa-fingerprint" style="margin-right: 5px;"></i>
+                <span>Document ID: <strong>{{ document.document_id }}</strong></span>
+                <a href="{{ url_for('security.verification_page') }}?document_id={{ document.document_id }}" 
+                   title="Verify document integrity using this ID"
+                   style="margin-left: 8px; color: #0369a1;">
+                    <i class="fas fa-shield-alt"></i> Verify
+                </a>
+            </div>
+            
+            <div class="document-container">
+                <div class="document-details">
+                    <div class="document-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Type:</span>
+                            <span class="meta-value">{{ document.document_type|upper }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Document ID:</span>
+                            <span class="meta-value">{{ document.document_id }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Uploaded:</span>
+                            <span class="meta-value">
+                                {% if document.formatted_date %}
+                                    {{ document.formatted_date }}
+                                {% elif document.upload_date and 'T' in document.upload_date %}
+                                    {{ document.upload_date.split('T')[0] }}
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                                {{ document.formatted_date }}
+                                {% if document.formatted_time %}
+                                at {{ document.formatted_time }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if document.formatted_size %}
+                        <div class="meta-item">
+                            <span class="meta-label">Size:</span>
+                            <span class="meta-value">{{ document.formatted_size }}</span>
+                        </div>
+                        {% endif %}
+                        {% if document.category %}
+                        <div class="meta-item">
+                            <span class="meta-label">Category:</span>
+                            <span class="meta-value">{{ document.category }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if document.document_description %}
+                    <div class="document-description">
+                        <h3>Description</h3>
+                        <p>{{ document.document_description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if document.tags %}
+                    <div class="document-tags">
+                        <h3>Tags</h3>
+                        <div class="tags-container">
+                            {% for tag in document.tags.split(',') %}
+                            <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if document.ai_summary or document.keyword_list %}
+                    <div class="document-ai">
+                        <h3>AI Insights</h3>
+                        
+                        {% if document.ai_summary %}
+                        <div class="meta-item">
+                            <span class="meta-label">Summary:</span>
+                            <div class="ai-summary">{{ document.ai_summary }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if document.keyword_list %}
+                        <div class="meta-item">
+                            <span class="meta-label">Keywords:</span>
+                            <div class="tags-container">
+                                {% for keyword in document.keyword_list %}
+                                <a href="{{ url_for('view.all_documents', keyword=keyword) }}" class="tag keyword-tag">{{ keyword }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if document.ai_topics %}
+                        <div class="meta-item">
+                            <span class="meta-label">Topics:</span>
+                            <div class="tags-container">
+                                {% for topic in document.ai_topics %}
+                                <span class="tag topic-tag">{{ topic }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="document-actions-secondary">
+                        <h3>Actions</h3>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('view.edit_document', document_id=document.document_id) }}" class="btn btn-secondary">
+                                <i class="fas fa-edit"></i> Edit Document
+                            </a>
+                            <a href="{{ url_for('view.document_versions', document_id=document.document_id) }}" class="btn btn-secondary">
+                                <i class="fas fa-history"></i> Version History
+                            </a>
+                            <button class="btn btn-danger" onclick="confirmDelete('{{ document.document_id }}', '{{ document.document_name }}')">
+                                <i class="fas fa-trash-alt"></i> Delete Document
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="document-preview">
+                    {% if document.document_type in ['pdf'] %}
+                        <div class="pdf-container" style="width: 100%; height: 70vh;">
+                            <iframe src="{{ document.content_url }}" type="application/pdf" width="100%" height="100%" style="border: none;">
+                                <p>Your browser doesn't support embedded PDFs. 
+                                   <a href="{{ document.content_url }}" target="_blank">Click here to view the PDF</a>.</p>
+                            </iframe>
+                        </div>
+                    {% elif document.document_type in ['jpg', 'jpeg', 'png', 'gif'] %}
+                        <div class="image-preview">
+                            <img src="{{ document.content_url }}" alt="{{ document.document_name }}">
+                        </div>
+                    {% elif document.document_type in ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'] %}
+                        <div class="office-container">
+                            <div class="file-icon">
+                                <i class="fas fa-file-{{ document.document_type }}"></i>
+                                <span>{{ document.document_type|upper }}</span>
+                            </div>
+                            <p>This document cannot be previewed directly. 
+                               <a href="{{ document.content_url }}" class="btn btn-primary" target="_blank">Open Document</a>.</p>
+                        </div>
+                    {% else %}
+                        <div class="generic-preview">
+                            <div class="file-icon">
+                                <i class="fas fa-file-alt"></i>
+                                <span>{{ document.document_type|upper }}</span>
+                            </div>
+                            <p>Preview not available for this file type.</p>
+                            <a href="{{ document.content_url }}" class="btn btn-primary" target="_blank">Open File</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if related_documents %}
+            <div class="related-documents">
+                <h2>Related Documents</h2>
+                
+                <form id="searchForm" action="{{ url_for('view.all_documents') }}" method="GET" class="search-bar">
+                    <input type="text" name="q" id="searchQuery" placeholder="Search documents..." value="{{ request.args.get('q', '') }}">
+                    
+                    <select name="category" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}" {% if request.args.get('category') == category %}selected{% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="type" id="typeFilter">
+                        <option value="">All Types</option>
+                        {% for type in doc_types %}
+                        <option value="{{ type }}" {% if request.args.get('type') == type %}selected{% endif %}>{{ type|upper }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="sort_by" id="sortBy">
+                        <option value="upload_date" {% if request.args.get('sort_by') == 'upload_date' or not request.args.get('sort_by') %}selected{% endif %}>Upload Date</option>
+                        <option value="document_name" {% if request.args.get('sort_by') == 'document_name' %}selected{% endif %}>Name</option>
+                        <option value="document_type" {% if request.args.get('sort_by') == 'document_type' %}selected{% endif %}>Type</option>
+                    </select>
+                    
+                    <select name="sort_order" id="sortOrder">
+                        <option value="desc" {% if request.args.get('sort_order') == 'desc' or not request.args.get('sort_order') %}selected{% endif %}>Descending</option>
+                        <option value="asc" {% if request.args.get('sort_order') == 'asc' %}selected{% endif %}>Ascending</option>
+                    </select>
+                    
+                    <input type="hidden" name="keyword" id="keywordInput" value="{{ request.args.get('keyword', '') }}">
+                    
+                    <button type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </form>
+                
+                {% if request.args.get('q') or request.args.get('category') or request.args.get('type') or request.args.get('keyword') %}
+                <div class="filter-tags">
+                    {% if request.args.get('q') %}
+                    <div class="filter-tag">
+                        <span>Search: {{ request.args.get('q') }}</span>
+                        <span class="remove" onclick="removeFilter('q')">×</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.args.get('category') %}
+                    <div class="filter-tag">
+                        <span>Category: {{ request.args.get('category') }}</span>
+                        <span class="remove" onclick="removeFilter('category')">×</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.args.get('type') %}
+                    <div class="filter-tag">
+                        <span>Type: {{ request.args.get('type')|upper }}</span>
+                        <span class="remove" onclick="removeFilter('type')">×</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.args.get('keyword') %}
+                    <div class="filter-tag">
+                        <span>Keyword: {{ request.args.get('keyword') }}</span>
+                        <span class="remove" onclick="removeFilter('keyword')">×</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="filter-tag">
+                        <span>Clear All</span>
+                        <span class="remove" onclick="clearAllFilters()">×</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="documents-grid documents-grid-small">
+                    {% for doc in related_documents %}
+                    <div class="document-card">
+                        <div class="document-type-icon {{ doc.document_type }}">
+                            {{ doc.document_type|upper }}
+                        </div>
+                        <div class="document-info">
+                            <h3>{{ doc.document_name }}</h3>
+                            <div class="document-meta">
+                                <span class="document-date">
+                                    <i class="fas fa-calendar-alt"></i> 
+                                    {% if doc.formatted_date %}
+                                        {{ doc.formatted_date }}
+                                    {% elif doc.upload_date and 'T' in doc.upload_date %}
+                                        {{ doc.upload_date.split('T')[0] }}
+                                    {% else %}
+                                        Unknown
+                                    {% endif %}
+                                    <i class="fas fa-calendar-alt"></i> {{ doc.formatted_date }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="document-actions">
+                            <a href="{{ url_for('view.view_document', document_id=doc.document_id) }}" class="btn btn-secondary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{{ url_for('view.document_versions', document_id=doc.document_id) }}" class="btn btn-secondary">
+                                <i class="fas fa-history"></i> Version History
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+    
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Confirm Delete</h2>
+            <p>Are you sure you want to delete "<span id="documentName"></span>"?</p>
+            <p class="warning">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <form id="deleteForm" method="POST" action="/upload/document/delete/">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function confirmDelete(documentId, documentName) {
+            document.getElementById('documentName').textContent = documentName;
+            const form = document.getElementById('deleteForm');
+            form.action = "/upload/document/delete/" + documentId;
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('show');
+            requestAnimationFrame(() => {
+                modal.style.opacity = '1';
+            });
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.classList.remove('show');
+            }, 300);
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+        
+        function removeFilter(paramName) {
+            const url = new URL(window.location.href);
+            const params = url.searchParams;
+            params.delete(paramName);
+            window.location.href = url.toString();
+        }
+        
+        function clearAllFilters() {
+            const url = new URL(window.location.href);
+            const path = url.pathname;
+            window.location.href = path;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const keywordTags = document.querySelectorAll('.keyword-tag');
+            keywordTags.forEach(tag => {
+                tag.addEventListener('click', function(e) {
+                    if (e.currentTarget.tagName === 'A' && e.currentTarget.hasAttribute('href')) {
+                        return true;
+                    }
+                    e.preventDefault();
+                    const keyword = e.currentTarget.textContent.trim();
+                    const keywordInput = document.getElementById('keywordInput');
+                    keywordInput.value = keyword;
+                    document.getElementById('searchForm').submit();
+                });
+            });
+            
+            const filterInputs = document.querySelectorAll('select[name="category"], select[name="type"], select[name="sort_by"], select[name="sort_order"]');
+            filterInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    document.getElementById('searchForm').submit();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

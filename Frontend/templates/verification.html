@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Verification | Document Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --error-color: #dc2626;
+            --info-color: #0369a1;
+            --success-color: #16a34a;
+            --warning-color: #ca8a04;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .verification-container {
+            padding: 2rem 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .verification-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .verification-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .verification-card h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .verification-card h2 i {
+            color: var(--info-color);
+        }
+        
+        .verification-form {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 80, 179, 0.15);
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #44444e;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .verification-methods {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .verification-method {
+            flex: 1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .verification-method:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .verification-method.active {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 80, 179, 0.05);
+        }
+        
+        .verification-method i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .verification-method h3 {
+            margin-top: 0;
+            color: var(--text-color);
+        }
+        
+        .verification-method p {
+            color: var(--light-text);
+            margin-bottom: 0;
+        }
+        
+        .verification-steps {
+            margin: 2rem 0;
+            counter-reset: step;
+        }
+        
+        .step {
+            margin-bottom: 1.5rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+        
+        .step:before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: var(--primary-color);
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        
+        .step h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .step p {
+            margin-top: 0;
+            color: var(--light-text);
+        }
+        
+        .verification-results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 6px solid;
+            display: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+        
+        .verification-results.success {
+            border-left-color: var(--success-color);
+            background-color: rgba(22, 163, 74, 0.05);
+            animation: pulse-success 2s infinite;
+        }
+        
+        .verification-results.error {
+            border-left-color: var(--error-color);
+            background-color: rgba(220, 38, 38, 0.05);
+        }
+        
+        .verification-results.warning {
+            border-left-color: var(--warning-color);
+            background-color: rgba(234, 179, 8, 0.05);
+        }
+        
+        .verification-results.info {
+            border-left-color: var(--info-color);
+            background-color: rgba(3, 105, 161, 0.05);
+        }
+        
+        .verification-results h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .verification-results.success h3 {
+            color: var(--success-color);
+        }
+        
+        .verification-results.error h3 {
+            color: var(--error-color);
+        }
+        
+        .verification-results.warning h3 {
+            color: var(--warning-color);
+        }
+        
+        .verification-results.info h3 {
+            color: var(--info-color);
+        }
+        
+        .verification-results .result-message {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .technical-details {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .technical-details p {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.07);
+            padding-bottom: 0.5rem;
+        }
+        
+        .technical-details p:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .technical-details .label {
+            font-weight: 600;
+            color: var(--text-color);
+            flex: 0 0 150px;
+        }
+        
+        .technical-details .value {
+            font-family: 'Courier New', monospace;
+            background-color: rgba(0,0,0,0.03);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            word-break: break-all;
+            flex: 1;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .verification-method-info {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            padding: 1.25rem !important;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .verification-method-info h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .verification-method-info p {
+            color: var(--secondary-color);
+            margin-bottom: 0;
+            margin-top: 0.5rem;
+        }
+        
+        @keyframes pulse-success {
+            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+        
+        .verification-process {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 80, 179, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .log-container {
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #f5f5f5;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            display: none;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .log-entry:before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+        
+        .log-entry.error:before {
+            content: '!';
+            color: var(--error-color);
+        }
+        
+        .log-entry.success:before {
+            content: '✓';
+            color: var(--success-color);
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .verification-methods {
+                flex-direction: column;
+            }
+            
+            .verification-method {
+                margin-bottom: 1rem;
+            }
+            
+            .technical-details p {
+                flex-direction: column;
+            }
+            
+            .technical-details .value {
+                margin-top: 0.25rem;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <!-- <li><a href="{{ url_for('main.index') }}" style="color: #003a8c;">Home</a></li> -->
+                    {% if session.get('user_id') %}
+                    <li><a href="{{ url_for('user.dashboard') }}" style="color: #003a8c;">Dashboard</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: #003a8c;">Logout</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}" style="color: #003a8c;">Login</a></li>
+                    <li><a href="{{ url_for('auth.signup') }}" style="color: #003a8c;">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <section class="verification-container">
+                <div class="verification-card">
+                    <h2><i class="fas fa-shield-alt"></i> Document Verification</h2>
+                    <p>
+                        Our document verification system uses blockchain technology and Merkle trees to ensure document integrity.
+                        Enter your document ID below to verify that a document hasn't been tampered with.
+                    </p>
+
+                    <div class="verification-steps">
+                        <div class="step">
+                            <h4>Enter Document ID</h4>
+                            <p>Provide the unique identifier for the document you want to verify.</p>
+                        </div>
+                        <div class="step">
+                            <h4>Choose Verification Method</h4>
+                            <p>Select standard verification (using current Merkle tree) or blockchain verification (comparing against original records).</p>
+                        </div>
+                        <div class="step">
+                            <h4>Review Results</h4>
+                            <p>The system will compare document hashes and provide verification results.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="verification-form">
+                        <div class="form-group">
+                            <label for="document-id">Document ID</label>
+                            <input type="text" id="document-id" name="document-id" placeholder="Enter the document ID (UUID format)" required>
+                        </div>
+                        
+                        <div class="verification-methods">
+                            <div class="verification-method standard active" data-method="standard">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Standard Verification</h3>
+                                <p>Verify against current Merkle tree</p>
+                            </div>
+                            <div class="verification-method blockchain" data-method="blockchain">
+                                <i class="fas fa-link"></i>
+                                <h3>Blockchain Verification</h3>
+                                <p>Compare against original blockchain record</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 2rem;">
+                            <button id="verify-btn" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Verify Document
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="verification-process" class="verification-process">
+                        <div class="spinner"></div>
+                        <p>Verifying document integrity...</p>
+                        
+                        <div id="log-container" class="log-container"></div>
+                    </div>
+                    
+                    <div id="verification-results" class="verification-results">
+                        <h3 class="result-title"></h3>
+                        <p class="result-message"></p>
+                        <div class="technical-details">
+                            <p>
+                                <span class="label">Document ID:</span>
+                                <span class="value doc-id"></span>
+                            </p>
+                            <p>
+                                <span class="label">Document Name:</span>
+                                <span class="value doc-name"></span>
+                            </p>
+                            <p class="document-hash">
+                                <span class="label">Document Hash:</span>
+                                <span class="value hash-value"></span>
+                            </p>
+                            <p class="blockchain-detail">
+                                <span class="label">Block Number:</span>
+                                <span class="value block-number"></span>
+                            </p>
+                            <p class="blockchain-detail">
+                                <span class="label">Merkle Root:</span>
+                                <span class="value merkle-root"></span>
+                            </p>
+                            <p class="timestamp-detail">
+                                <span class="label">Timestamp:</span>
+                                <span class="value timestamp-value"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="verification-method-info mt-3 p-3 border rounded">
+                        <h4><i class="fas fa-info-circle"></i> Verification Method: <span class="verification-method-text">N/A</span></h4>
+                        <p class="verification-method-details"></p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+
+    <script>
+    $(document).ready(function() {
+        // Method selection
+        let verificationMethod = 'standard';
+        
+        $('.verification-method').click(function() {
+            $('.verification-method').removeClass('active');
+            $(this).addClass('active');
+            verificationMethod = $(this).data('method');
+        });
+        
+        // Verification process
+        $('#verify-btn').click(function() {
+            const documentId = $('#document-id').val().trim();
+            
+            if (!documentId) {
+                alert('Please enter a document ID');
+                return;
+            }
+            
+            // Clear previous results
+            $('#verification-results').hide().removeClass('success error warning info');
+            $('#log-container').empty().hide();
+            
+            // Show verification process
+            $('#verification-process').show();
+            
+            // Add initial log entry
+            addLogEntry(`Starting ${verificationMethod} verification for document ${documentId}...`);
+            
+            // Determine verification endpoint
+            const endpoint = verificationMethod === 'standard' 
+                ? `/security/verify-document/${documentId}`
+                : `/security/verify-document-blockchain/${documentId}`;
+            
+            // Simulated verification delay for better UX
+            setTimeout(function() {
+                addLogEntry(`Connecting to verification service...`);
+                
+                // Make API request
+                $.ajax({
+                    url: endpoint,
+                    type: 'GET',
+                    success: function(data) {
+                        console.log("Verification response:", data); // Debug: Log full response
+                        
+                        if (verificationMethod === 'standard') {
+                            // Standard verification handling
+                            // ...existing code...
+                        } else {
+                            // Blockchain verification handling - improved flow display
+                            addLogEntry(`🔍 STEP 1: Computing Merkle root for document ${documentId}`);
+                            addLogEntry(`Current Merkle root: ${data.current_root || 'N/A'}`);
+                            
+                            if (!data.standard_verified && data.standard_verified !== undefined) {
+                                addLogEntry(`❌ Document failed standard verification`, 'error');
+                                showResults('error', '❌ Verification Failed', 
+                                    'The document does not match our secure records. It may have been modified.', data);
+                                return;
+                            }
+                            
+                            addLogEntry(`✅ Document integrity verified with Merkle tree`, 'success');
+                            
+                            addLogEntry(`🔍 STEP 2: Searching blockchain for Merkle root ${(data.current_root || '').substring(0, 16)}...`, 'info');
+                            
+                            // Check if document was verified in blockchain
+                            if (data.verified === true) {
+                                const matchType = data.match_type || 'exact';
+                                const simulated = data.simulated ? '(simulation mode)' : '';
+                                
+                                addLogEntry(`✅ Merkle root found in blockchain! ${simulated}`, 'success');
+                                
+                                if (data.match_type === 'prefix') {
+                                    addLogEntry(`ℹ️ Found using prefix matching`, 'success');
+                                }
+                                
+                                if (data.blockchain_timestamp) {
+                                    const date = new Date(data.blockchain_timestamp * 1000);
+                                    addLogEntry(`📅 Block timestamp: ${date.toLocaleString()}`, 'success');
+                                }
+                                
+                                if (data.block_number) {
+                                    addLogEntry(`⛓️ Found in block #${data.block_number}`, 'success');
+                                }
+                                
+                                showResults('success', '✅ Blockchain Verification Successful', 
+                                    'The document\'s Merkle root was found in the blockchain, confirming its integrity.', 
+                                    data);
+                            } else {
+                                // ...existing code...
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        // ...existing code...
+                    },
+                    complete: function() {
+                        setTimeout(function() {
+                            $('#verification-process').hide();
+                            $('#log-container').show();
+                        }, 500);
+                    }
+                });
+            }, 1000);
+        });
+
+        // Blockchain verification
+        $('#verify-blockchain').click(function() {
+            // ...existing code...
+        });
+        
+        function addLogEntry(text, type = '') {
+            const entry = $('<div class="log-entry"></div>').addClass(type).text(text);
+            $('#log-container').append(entry).show();
+        }
+        
+        function showResults(type, title, message, data = {}) {
+            // Update verification results display
+            $('#verification-results')
+                .removeClass('success error warning info')
+                .addClass(type)
+                .show();
+                
+            // Set basic info
+            $('#verification-results .result-title').text(title);
+            $('#verification-results .result-message').text(message);
+            
+            // Document ID
+            $('#verification-results .doc-id').text(data.document_id || $('#document-id').val().trim());
+            
+            // Document Name (ensure it's displayed even if empty)
+            $('#verification-results .doc-name').text(data.document_name || 'N/A');
+            
+            // Document Hash
+            if (data.document_hash) {
+                $('.document-hash').show();
+                $('.hash-value').text(data.document_hash);
+            } else {
+                $('.document-hash').hide();
+            }
+            
+            // Block Number (for blockchain verification)
+            if (data.block_number) {
+                $('.blockchain-detail').show();
+                $('.block-number').text(data.block_number);
+                $('.merkle-root').text(data.current_root || data.root_hash || 'N/A');
+            } else {
+                $('.blockchain-detail').hide();
+            }
+            
+            // Timestamp
+            if (data.timestamp || data.upload_timestamp || data.blockchain_timestamp || data.formatted_timestamp) {
+                $('.timestamp-detail').show();
+                
+                let timestampText = 'N/A';
+                if (data.formatted_timestamp) {
+                    timestampText = data.formatted_timestamp;
+                } else if (data.blockchain_timestamp) {
+                    let date = new Date(data.blockchain_timestamp * 1000);
+                    timestampText = date.toLocaleString();
+                } else if (data.upload_timestamp) {
+                    let date = new Date(data.upload_timestamp * 1000);
+                    timestampText = date.toLocaleString();
+                } else if (data.timestamp) {
+                    let date = new Date(data.timestamp * 1000);
+                    timestampText = date.toLocaleString();
+                }
+                
+                $('.timestamp-value').text(timestampText);
+            } else {
+                $('.timestamp-detail').hide();
+            }
+            
+            // Verification Method Info
+            if (data.verification_method) {
+                $('.verification-method-info').show();
+                $('.verification-method-text').text(
+                    data.verification_method === 'hash_timestamp' ? 'Hash & Timestamp Verification' :
+                    data.verification_method === 'hash_only' ? 'Hash Verification' :
+                    data.verification_method === 'blockchain' ? 'Blockchain Verification' :
+                    data.verification_method
+                );
+                
+                $('.verification-method-details').text(
+                    data.verification_method === 'hash_timestamp' ? 
+                        'Document verified using secure hash and timestamp. This ensures the document content has not been modified since upload.' :
+                    data.verification_method === 'hash_only' ?
+                        'Document verified using secure hash only. This confirms the document content matches its original hash.' :
+                    data.verification_method === 'blockchain' ?
+                        'Document verified against blockchain records. This provides the highest level of tamper-proof verification.' :
+                    'Document verified successfully.'
+                );
+            } else {
+                // Default to showing method info for blockchain verification
+                if (verificationMethod === 'blockchain') {
+                    $('.verification-method-info').show();
+                    $('.verification-method-text').text('Blockchain Verification');
+                    $('.verification-method-details').text(
+                        'Document verified against blockchain records. This provides the highest level of tamper-proof verification.'
+                    );
+                } else {
+                    $('.verification-method-info').show();
+                    $('.verification-method-text').text('Standard Verification');
+                    $('.verification-method-details').text(
+                        'Document verified using secure hash comparison. This confirms the document content has not been modified.'
+                    );
+                }
+            }
+        }
+        
+        // Process URL parameters to pre-fill document ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const docId = urlParams.get('document_id');
+        if (docId) {
+            $('#document-id').val(docId);
+            // Set blockchain as default method when document_id is provided
+            $('.verification-method').removeClass('active');
+            $('.verification-method.blockchain').addClass('active');
+            verificationMethod = 'blockchain';
+            
+            // Removed auto-verification - user will click manually
+        }
+    });
+    </script>
+</body>
+</html>

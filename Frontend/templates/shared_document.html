@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.document_name }} | Shared Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --shared-bg: #f0f7ff;
+            --shared-border: #bae6fd;
+            --shared-text: #0369a1;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .shared-header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 0;
+            position: relative;
+            border-bottom: 3px solid var(--shared-border);
+        }
+        
+        .shared-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .shared-label {
+            background-color: var(--shared-bg);
+            color: var(--shared-text);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--shared-border);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .shared-label::before {
+            content: "\f1e0";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+        
+        main {
+            padding: 2.5rem 0;
+        }
+        
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .document-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .document-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--white);
+            color: var(--text-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .document-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 992px) {
+            .document-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .document-details {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+        
+        .document-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meta-label {
+            font-weight: 500;
+            color: var(--light-text);
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .meta-value {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .document-description {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .document-description h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0 0 1rem;
+        }
+        
+        .document-description p {
+            margin: 0;
+            color: var(--secondary-color);
+            line-height: 1.7;
+        }
+        
+        .shared-notice {
+            margin-top: 2rem;
+            padding: 1.25rem;
+            background-color: var(--shared-bg);
+            border-radius: 8px;
+            border: 1px solid var(--shared-border);
+            color: var(--shared-text);
+            position: relative;
+        }
+        
+        .shared-notice p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .shared-notice a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .shared-notice a:hover {
+            text-decoration: underline;
+        }
+        
+        .document-preview {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-height: 70vh;
+            overflow: auto;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .pdf-preview {
+            height: 70vh;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .pdf-preview iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .generic-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            gap: 1.5rem;
+        }
+        
+        .file-icon {
+            width: 120px;
+            height: 150px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+        
+        .file-icon::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-style: solid;
+            border-width: 0 30px 30px 0;
+            border-color: transparent rgba(0,0,0,0.2) transparent transparent;
+        }
+        
+        .file-icon span {
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border-left: 4px solid #059669;
+        }
+        
+        .alert-warning {
+            background-color: #fffbeb;
+            color: #92400e;
+            border-left: 4px solid #d97706;
+        }
+        
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #dc2626;
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @media (max-width: 768px) {
+            .document-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .document-actions {
+                width: 100%;
+            }
+            
+            .document-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="shared-document-page">
+    <header class="shared-header">
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <div class="shared-label">
+                <span>Shared Document</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <section class="shared-document-view">
+                <div class="document-header">
+                    <h1>{{ document.document_name }}</h1>
+                    <div class="document-actions">
+                        <a href="{{ document.document_url }}" class="btn btn-primary" target="_blank">View Document</a>
+                        <a href="{{ document.document_url }}" class="btn btn-secondary" download>Download</a>
+                    </div>
+                </div>
+                
+                <div class="document-container">
+                    <div class="document-details">
+                        <div class="document-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">File Type:</span>
+                                <span class="meta-value">{{ document.document_type|upper }}</span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">File Size:</span>
+                                <span class="meta-value">{{ document.formatted_size }}</span>
+                            </div>
+                            
+                            {% if document.category %}
+                            <div class="meta-item">
+                                <span class="meta-label">Category:</span>
+                                <span class="meta-value">{{ document.category }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if document.document_description %}
+                        <div class="document-description">
+                            <h3>Description</h3>
+                            <p>{{ document.document_description }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="shared-notice">
+                            <p>This document has been shared with you. To manage your own documents, please <a href="{{ url_for('auth.login') }}">sign in</a> or <a href="{{ url_for('auth.register') }}">register</a>.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="document-preview">
+                        {% if document.document_type in ['jpg', 'jpeg', 'png', 'gif'] %}
+                            <div class="image-preview">
+                                <img src="{{ document.document_url }}" alt="{{ document.document_name }}">
+                            </div>
+                        {% elif document.document_type == 'pdf' %}
+                            <div class="pdf-preview">
+                                <iframe src="{{ document.document_url }}" width="100%" height="600" frameborder="0"></iframe>
+                            </div>
+                        {% else %}
+                            <div class="generic-preview">
+                                <div class="file-icon {{ document.document_type }}">
+                                    <span>{{ document.document_type|upper }}</span>
+                                </div>
+                                <p>Preview not available for this file type.</p>
+                                <a href="{{ document.document_url }}" class="btn btn-primary" target="_blank">Open File</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add subtle animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate document details and preview
+            const documentDetails = document.querySelector('.document-details');
+            const documentPreview = document.querySelector('.document-preview');
+            
+            documentDetails.style.opacity = '0';
+            documentDetails.style.transform = 'translateX(-20px)';
+            documentDetails.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            documentPreview.style.opacity = '0';
+            documentPreview.style.transform = 'translateX(20px)';
+            documentPreview.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                documentDetails.style.opacity = '1';
+                documentDetails.style.transform = 'translateX(0)';
+                
+                documentPreview.style.opacity = '1';
+                documentPreview.style.transform = 'translateX(0)';
+            }, 300);
+        });
+    </script>
+</body>
+</html>

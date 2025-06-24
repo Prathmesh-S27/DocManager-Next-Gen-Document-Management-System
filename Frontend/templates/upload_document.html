@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Document | Document Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0050b3;
+            --primary-hover: #003a8c;
+            --secondary-color: #52525b;
+            --text-color: #18181b;
+            --light-text: #71717a;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --accent-color: #047857;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --border-color: #e4e4e7;
+            --card-bg: #ffffff;
+            --error-color: #dc2626;
+            --info-color: #0369a1;
+            --light-bg: #f1f5f9;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a.active {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav a.active::after {
+            width: 100%;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        main {
+            padding: 2.5rem 0;
+        }
+        
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--light-text);
+        }
+        
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        .upload-document {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tabs li {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            position: relative;
+            color: var(--secondary-color);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .tabs li:hover {
+            color: var(--primary-color);
+        }
+        
+        .tabs li.active {
+            color: var(--primary-color);
+        }
+        
+        .tabs li.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            margin-top: 1.5rem;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 80, 179, 0.15);
+        }
+        
+        .form-group input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--light-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .form-group input[type="file"]:hover {
+            background-color: rgba(0, 80, 179, 0.05);
+            border-color: var(--primary-color);
+        }
+        
+        .form-help {
+            font-size: 0.875rem;
+            color: var(--light-text);
+            margin-top: 0.4rem;
+            margin-bottom: 0;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transform: translateY(-1px);
+        }
+        
+        .file-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        
+        .file-preview.has-files {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem 0;
+        }
+        
+        .file-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(4, 120, 87, 0.1);
+            border-left: 4px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            border-left: 4px solid var(--error-color);
+            color: var(--error-color);
+        }
+        
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Doc Manager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('user.dashboard') }}" style="color: #003a8c;">Dashboard</a></li>
+                    <li><a href="{{ url_for('user.profile') }}" style="color: #003a8c;">Profile</a></li>
+                    <li><a href="{{ url_for('user.upload_document') }}" class="active">Upload</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: #003a8c;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <section class="upload-document">
+                <div class="breadcrumbs">
+                    <a href="{{ url_for('user.dashboard') }}">Dashboard</a> &raquo; Upload Document
+                </div>
+                
+                <ul class="tabs">
+                    <li class="active" data-tab="single-upload">Single File Upload</li>
+                    <li data-tab="multi-upload">Multiple File Upload</li>
+                </ul>
+                
+                <div class="tab-content">
+                    <!-- Single File Upload -->
+                    <div id="single-upload" class="tab-pane active">
+                        <h2>Upload New Document</h2>
+                        
+                        <!-- Update the action URL to match your blueprint registration -->
+                        <form action="/upload/upload" method="post" enctype="multipart/form-data" class="document-form">
+                            <div class="form-group">
+                                <label for="document_name">Document Name</label>
+                                <input type="text" id="document_name" name="document_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="document_description">Description</label>
+                                <textarea id="document_description" name="document_description" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="tags">Tags (comma separated)</label>
+                                <input type="text" id="tags" name="tags" placeholder="invoice, receipt, contract, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label for="file">Document File</label>
+                                <input type="file" id="file" name="file" required>
+                                <p class="form-help">Allowed types: PDF, DOC, DOCX, TXT, JPG, JPEG, PNG</p>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Upload Document</button>
+                                <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Multiple File Upload -->
+                    <div id="multi-upload" class="tab-pane">
+                        <h2>Upload Multiple Documents</h2>
+                        
+                        <!-- Update the action URL to match your blueprint registration -->
+                        <form action="/upload/upload/multiple" method="post" enctype="multipart/form-data" class="document-form">
+                            <div class="form-group">
+                                <label for="document_category">Category</label>
+                                <input type="text" id="document_category" name="document_category" placeholder="Invoices, Receipts, etc." required>
+                            </div>
+                            <div class="form-group">
+                                <label for="multi_tags">Tags (comma separated)</label>
+                                <input type="text" id="multi_tags" name="tags" placeholder="invoice, receipt, contract, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label for="files">Document Files</label>
+                                <input type="file" id="files" name="files[]" multiple required>
+                                <p class="form-help">Allowed types: PDF, DOC, DOCX, TXT, JPG, JPEG, PNG</p>
+                                <p class="form-help">Select multiple files by holding Ctrl (or Cmd) while selecting</p>
+                            </div>
+                            <div id="file-preview" class="file-preview">
+                                <!-- File preview will be shown here -->
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Upload Documents</button>
+                                <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Document Management System</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tabs li');
+            const tabContents = document.querySelectorAll('.tab-pane');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and panes
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding pane
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // File preview for multiple upload
+            const fileInput = document.getElementById('files');
+            const filePreview = document.getElementById('file-preview');
+            
+            fileInput.addEventListener('change', function() {
+                filePreview.innerHTML = '';
+                
+                if (this.files.length > 0) {
+                    filePreview.classList.add('has-files');
+                    const fileList = document.createElement('ul');
+                    fileList.className = 'file-list';
+                    
+                    for (let i = 0; i < this.files.length; i++) {
+                        const file = this.files[i];
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                        fileList.appendChild(listItem);
+                    }
+                    
+                    filePreview.appendChild(fileList);
+                    filePreview.innerHTML += `<p>Total: ${this.files.length} files selected</p>`;
+                } else {
+                    filePreview.classList.remove('has-files');
+                }
+            });
+            
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+        });
+    </script>
+</body>
+</html>
